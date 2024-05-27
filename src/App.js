@@ -1,32 +1,31 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
 
 function App() {
-  // 상태를 저장할 useState 훅 사용
-  const [data, setData] = useState(null);
+  const [data, setData] = useState([]);
 
-  // 데이터 받아오기
-  const fetchData = async () => {
+  async function fetchData() {
+    //예외처리
     try {
-      // fetch로 데이터 요청
-      const response = await fetch('http://incheon/web');
-      const jsonData = await response.json();
+      const response = await fetch("http://localhost:3002/web"); //fetch
+      const result = await response.json();
 
-      // 로컬 스토리지에 데이터 저장
-      localStorage.setItem('web', JSON.stringify(jsonData));
+      localStorage.setItem("web", JSON.stringify(result));
+      const storedData = JSON.parse(localStorage.getItem("web"));
 
-      // 상태 업데이트
-      setData(jsonData);
+      setData(Array.isArray(storedData) ? storedData : []);
     }
-    catch (error) {
-      console.error('Error fetching data:', error); //fetch 실패하면 콘솔에 에러 메세지
+      
+    catch(err) {
+      console.error("fetch실패", err);
     }
-  };
+  }
 
   return (
-    <div>
+    <div className="App">
       <button onClick={fetchData}>INU</button>
+    
       <div>
-        {data ? <pre>{JSON.stringify(data, null, 2)}</pre> : 'fetch 실패'}
+        {data.map((item, index) => (<p key={index}>{item.class}</p>))}
       </div>
     </div>
   );
